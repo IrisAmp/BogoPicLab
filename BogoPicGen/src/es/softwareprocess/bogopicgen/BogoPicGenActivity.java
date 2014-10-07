@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -83,23 +84,22 @@ public class BogoPicGenActivity extends Activity {
 				processIntent(true);
 			}
 		});
-
 	}
 
 	private Bitmap ourBMP;
 
 	private void setBogoPic() {
 		// TODO: Show a toast with message "Generating Photo"
-		
+		Toast.makeText(this, "Making a photo!", Toast.LENGTH_SHORT).show();
 		
 		// TODO: Get a reference to the image button
-		
+		ImageButton button = (ImageButton) this.findViewById(R.id.TakeAPhoto);
 		
 		// Generate a bogopic
 		ourBMP = BogoPicGen.generateBitmap(400, 400);
 		
 		// TODO: Assign the bogopic to the button with setImageBitmap
-		
+		button.setImageBitmap(ourBMP);
 	}
 
 	// Call this to accept
@@ -112,15 +112,35 @@ public class BogoPicGenActivity extends Activity {
 		try {	
 			if (intent.getExtras() != null) {
 				// TODO: If cancelled, show a toast, set result to RESULT_CANCELED, finish and return 
-				
+				if (cancel)
+				{
+					Toast.makeText(this, "Photo canceled.", Toast.LENGTH_SHORT).show();
+					this.setResult(RESULT_CANCELED);
+					this.finish();
+					return;
+				}
 				
 				// If accepted save the picture
 				File intentPicture = getPicturePath(intent);
 				saveBMP(intentPicture, ourBMP);
 				
-				// TODO: set result to RESULT_OK
+				char [] alpha = 
+					{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+					 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+					 'U', 'V', 'W', 'X', 'Y', 'Z'};
+				String msg = "";
+				for (int i = 0; i < 32; i ++)
+				{
+					msg += alpha[(new Random()).nextInt(26)];
+				}
 				
-			} else {
+				// TODO: set result to RESULT_OK
+				this.setResult(
+						RESULT_OK, 
+						(new Intent()).putExtra("BogoPicGen.RANDOM_MSG", msg));
+			}
+			else
+			{
 				Toast.makeText(this, "Photo Cancelled: No Reciever?",
 						Toast.LENGTH_LONG).show();
 				setResult(RESULT_CANCELED);
